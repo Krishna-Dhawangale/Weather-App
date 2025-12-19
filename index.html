@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SkyCast Weather</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background: linear-gradient(180deg, #89CFF0, #E0F6FF);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .weather-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        padding: 25px;
+        border-radius: 22px;
+        width: 380px;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    /* HEADER */
+    .app-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .logo {
+        font-size: 30px;
+    }
+
+    .app-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a73e8;
+    }
+
+    /* SEARCH */
+    .search {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .search input {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+
+    .search button {
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: none;
+        background: #1a73e8;
+        color: white;
+        cursor: pointer;
+    }
+
+    /* WEATHER INFO */
+    .location {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .date {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .temperature {
+        font-size: 64px;
+        font-weight: 600;
+    }
+
+    .condition {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    /* DETAILS GRID */
+    .details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        font-size: 14px;
+        color: #444;
+    }
+
+    .details div {
+        text-align: center;
+        background: #f5f9ff;
+        padding: 10px;
+        border-radius: 12px;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="weather-card">
+
+    <!-- HEADER -->
+    <div class="app-header">
+        <div class="logo">🌤️</div>
+        <div class="app-title">SkyCast Weather</div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search">
+        <input type="text" id="cityInput" placeholder="Search city">
+        <button onclick="getWeather()">Search</button>
+    </div>
+
+    <!-- WEATHER INFO -->
+    <div id="weatherInfo" class="hidden">
+        <div class="location" id="location"></div>
+        <div class="date" id="date"></div>
+
+        <div class="temperature" id="temp"></div>
+        <div class="condition" id="condition"></div>
+
+        <div class="details">
+            <div>
+                💧
+                <div id="humidity"></div>
+                <small>Humidity</small>
+            </div>
+            <div>
+                🌬
+                <div id="wind"></div>
+                <small>Wind</small>
+            </div>
+            <div>
+                🌡
+                <div id="feels"></div>
+                <small>Feels Like</small>
+            </div>
+
+            <div>
+                🌫
+                <div id="visibility"></div>
+                <small>Visibility</small>
+            </div>
+            <div>
+                📊
+                <div id="pressure"></div>
+                <small>Pressure</small>
+            </div>
+            <div>
+                ☀️
+                <div id="uv"></div>
+                <small>UV Index</small>
+            </div>
+
+            <div>
+                🫁
+                <div id="aqi"></div>
+                <small>AQI (PM2.5)</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const apiKey = "7e24bf27e4de43deab3171654251912";
+
+    function getWeather() {
+        const city = document.getElementById("cityInput").value;
+
+        if (city === "") {
+            alert("Please enter a city name");
+            return;
+        }
+
+        const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("weatherInfo").classList.remove("hidden");
+
+                document.getElementById("location").innerText =
+                    data.location.name + ", " + data.location.country;
+
+                document.getElementById("temp").innerText =
+                    data.current.temp_c + "°";
+
+                document.getElementById("condition").innerText =
+                    data.current.condition.text;
+
+                document.getElementById("humidity").innerText =
+                    data.current.humidity + "%";
+
+                document.getElementById("wind").innerText =
+                    data.current.wind_kph + " km/h";
+
+                document.getElementById("feels").innerText =
+                    data.current.feelslike_c + "°C";
+
+                document.getElementById("visibility").innerText =
+                    data.current.vis_km + " km";
+
+                document.getElementById("pressure").innerText =
+                    data.current.pressure_mb + " mb";
+
+                document.getElementById("uv").innerText =
+                    data.current.uv;
+
+                // AQI (PM2.5)
+                document.getElementById("aqi").innerText =
+                    Math.round(data.current.air_quality.pm2_5);
+
+                document.getElementById("date").innerText =
+                    new Date().toDateString();
+            })
+            .catch(() => {
+                alert("City not found!");
+            });
+    }
+</script>
+
+</body>
+</html>
